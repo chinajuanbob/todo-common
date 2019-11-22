@@ -1,0 +1,10 @@
+*.DS_Store
+DS_Store
+node_modules/
+logs/
+*.db
+s3f_*
+*.test
+*.out
+build/
+/main

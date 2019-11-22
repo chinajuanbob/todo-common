@@ -3,10 +3,36 @@ GOOS=linux
 GOARCH=amd64
 GOPATH:=$(shell go env GOPATH)
 
+.PHONY: setup
+setup:
+	GO111MODULE=off go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+	GO111MODULE=off go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+	GO111MODULE=off go get -u github.com/golang/protobuf/protoc-gen-go
+
 .PHONY: proto
 proto:
 	protoc --proto_path=${GOPATH}/src:. --micro_out=. --go_out=. proto/health/health.proto
-	protoc --proto_path=${GOPATH}/src:. --micro_out=. --go_out=. proto/todo/todo.proto
+	protoc --proto_path=${GOPATH}/src:. \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+		--micro_out=. --go_out=. \
+		proto/todo/todo.proto
+	protoc --proto_path=${GOPATH}/src:. \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+		--go_out=plugins=grpc:. \
+		proto/todo/todo.proto
+	protoc --proto_path=${GOPATH}/src:. \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+		--grpc-gateway_out=logtostderr=true:. \
+		proto/todo/todo.proto
+	protoc --proto_path=${GOPATH}/src:. \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway \
+		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
+		--swagger_out=logtostderr=true:. \
+		proto/todo/todo.proto
+	mv -f proto/todo/todo.swagger.json static/swagger/swagger.json
 
 .PHONY: test
 test:
