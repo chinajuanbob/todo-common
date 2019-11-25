@@ -17,22 +17,23 @@ proto:
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
 		--micro_out=. --go_out=. \
 		proto/todo/todo.proto
+	cp -f proto/todo/todo.proto proto/todo-gw/todo.proto
 	protoc --proto_path=${GOPATH}/src:. \
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway \
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
 		--go_out=plugins=grpc:. \
-		proto/todo/todo.proto
+		proto/todo-gw/todo.proto
 	protoc --proto_path=${GOPATH}/src:. \
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway \
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
 		--grpc-gateway_out=logtostderr=true:. \
-		proto/todo/todo.proto
+		proto/todo-gw/todo.proto
 	protoc --proto_path=${GOPATH}/src:. \
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway \
 		-I$(GOPATH)/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis \
 		--swagger_out=logtostderr=true:. \
-		proto/todo/todo.proto
-	mv -f proto/todo/todo.swagger.json static/swagger/swagger.json
+		proto/todo-gw/todo.proto
+	mv -f proto/todo-gw/todo.swagger.json static/swagger/swagger.json
 
 .PHONY: test
 test:
