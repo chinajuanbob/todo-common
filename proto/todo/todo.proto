@@ -1,7 +1,68 @@
 syntax = "proto3";
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
 
 package chinajuanbob.todo.v1;
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+	info: {
+		title: "TODO service";
+		version: "1.0";
+		contact: {
+			name: "TODO project";
+			url: "https://github.com/chinajuanbob/todo-common";
+			email: "chinajuanbob@gmail.com";
+		};
+	};
+	schemes: HTTP;
+	schemes: HTTPS;
+	consumes: "application/json";
+	produces: "application/json";
+	security_definitions: {
+		security: {
+			key: "BasicAuth";
+			value: {
+				type: TYPE_BASIC;
+			}
+		}
+		security: {
+			key: "ApiKeyAuth";
+			value: {
+				type: TYPE_API_KEY;
+				in: IN_HEADER;
+				name: "X-API-Key";
+			}
+		}
+	}
+	security: {
+		security_requirement: {
+			key: "BasicAuth";
+			value: {};
+		}
+		security_requirement: {
+			key: "ApiKeyAuth";
+			value: {};
+		}
+	}
+	responses: {
+		key: "403";
+		value: {
+			description: "Returned when the user does not have permission to access the resource.";
+		}
+	}
+	responses: {
+		key: "404";
+		value: {
+			description: "Returned when the resource does not exist.";
+			schema: {
+				json_schema: {
+					type: STRING;
+				}
+			}
+		}
+	}
+};
 
 enum TodoStatus {
     NEW = 0;
@@ -17,10 +78,44 @@ message Todo {
 }
 
 service TodoService {
-    rpc Add(AddTodoRequest) returns (AddTodoResponse){}
-    rpc Update(UpdateTodoRequest) returns (UpdateTodoResponse){}
-    rpc List(ListTodoRequest) returns (ListTodoResponse){}
-    rpc Delete(DeleteTodoRequest) returns (DeleteTodoResponse){}
+    rpc Add(AddTodoRequest) returns (AddTodoResponse){
+        option (google.api.http) = {
+            post: "/v1/todo"
+            body: "content"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description: "Description for adding an item.";
+            summary: "Add a TODO item";
+        };
+    }
+    rpc Update(UpdateTodoRequest) returns (UpdateTodoResponse){
+        option (google.api.http) = {
+            patch: "/v1/todo/{id}"
+            body: "content"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description: "Description for updating an item.";
+            summary: "Update a TODO item";
+        };
+    }
+    rpc List(ListTodoRequest) returns (ListTodoResponse){
+        option (google.api.http) = {
+            get: "/v1/todos"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description: "Description for listing items.";
+            summary: "List TODO items";
+        };
+    }
+    rpc Delete(DeleteTodoRequest) returns (DeleteTodoResponse){
+        option (google.api.http) = {
+            delete: "/v1/todo/{id}"
+        };
+        option (grpc.gateway.protoc_gen_swagger.options.openapiv2_operation) = {
+            description: "Description for deleting an item.";
+            summary: "Delete a TODO item";
+        };
+    }
 }
 
 message AddTodoRequest {
