@@ -9,3 +9,4 @@ s3f_*
 build/
 /main
 proto/*-gw/*.proto
+package-lock.json
