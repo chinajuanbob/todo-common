@@ -1,0 +1,17 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package chinajuanbob.todo.v1;
+
+enum TodoStatus {
+    NEW = 0;
+    INPROGRESS = 1;
+    DONE = 2;
+}
+
+message Todo {
+    int32 id = 1;
+    string content = 2;
+    TodoStatus status = 3;
+    google.protobuf.Timestamp last_updated = 4;
+}

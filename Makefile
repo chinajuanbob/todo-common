@@ -35,6 +35,15 @@ proto:
 		proto/todo-gw/todo.proto
 	mv -f proto/todo-gw/todo.swagger.json static/swagger/swagger.json
 
+.PHONY: genjs
+genjs:
+	npm install ts-protoc-gen
+	protoc \
+		--plugin="protoc-gen-ts=./node_modules/.bin/protoc-gen-ts" \
+		--js_out="import_style=commonjs,binary:." \
+		--ts_out=. \
+		proto/todo-js/todo.proto
+
 .PHONY: test
 test:
 	go test -v ./... -cover
